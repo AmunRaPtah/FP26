@@ -1,0 +1,22 @@
+# Large raw data stays local (see README)
+raw_data_large/
+
+# Quarto
+.quarto/
+_site/
+*.files/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# R / RStudio
+.Rproj.user/
+.Rhistory
+.RData
+
+# OS
+.DS_Store
+Thumbs.db

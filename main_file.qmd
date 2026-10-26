@@ -1,0 +1,82 @@
+---
+title: "FP26: Fundamentals of Programming for Digital Health"
+subtitle: "Project setup: git, GitHub and Quarto"
+author: "AmunRaPtah"
+date: 2026-10-26
+format:
+  html:
+    toc: true
+    embed-resources: true
+    code-fold: true
+---
+
+## What this project is
+
+This repository is the FP26 course project for *Fundamentals of Programming for
+Digital Health* (HPI, WS 2026/27). It follows the workflow described on the
+course pages: a well-named GitHub repository, a reproducible folder structure,
+and a Quarto document that reads its data through helper functions kept in
+`functions.py`.
+
+Everything shown here is generated from the code in this repository by running
+`quarto render`.
+
+## Repository layout
+
+| Path                  | Purpose                                            |
+|-----------------------|----------------------------------------------------|
+| `main_file.qmd`       | this Quarto document                               |
+| `functions.py`        | data handling and plotting helpers                 |
+| `data/data_small.csv` | small derived data set, tracked by git             |
+| `raw_data_large/`     | large raw data, kept local and listed in `.gitignore` |
+| `figures/`            | figures written by the document                    |
+
+## The data
+
+The small table holds heart rate and systolic blood pressure for three
+synthetic patients, recorded every four hours over twelve hours.
+
+```{python}
+#| label: setup
+from pathlib import Path
+
+from functions import by_patient, plot_heart_rate, read_vitals, summarize
+
+Path("figures").mkdir(exist_ok=True)
+
+rows = read_vitals("data/data_small.csv")
+print(f"{len(rows)} measurements from {len(by_patient(rows))} patients")
+```
+
+## Summary per patient
+
+For each patient, the mean heart rate and its range over the recording:
+
+```{python}
+for patient, patient_rows in sorted(by_patient(rows).items()):
+    stats = summarize([r["heart_rate"] for r in patient_rows])
+    print(
+        f"{patient}: n={stats['n']}, mean={stats['mean']:.1f} bpm, "
+        f"range {stats['min']:.0f}–{stats['max']:.0f} bpm"
+    )
+```
+
+## Heart rate over time
+
+```{python}
+#| label: fig-heart-rate
+#| fig-cap: "Heart rate over the first twelve hours of the recording."
+
+figure = plot_heart_rate(rows, "figures/heart_rate.png")
+figure
+```
+
+## Reproducing this document
+
+From the repository root:
+
+```bash
+quarto render
+```
+
+This requires Quarto and Python 3 with `matplotlib` installed.
